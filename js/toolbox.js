@@ -28,6 +28,18 @@ const toolbox = {
                 {
                     kind: "block",
                     type: "variable_reference"
+                },
+
+                // NUEVO: Crear variable y asignarle una operación
+                {
+                    kind: "block",
+                    type: "create_variable_with_op"
+                },
+
+                // NUEVO: Asignar operación a variable existente
+                {
+                    kind: "block",
+                    type: "assign_to_variable"
                 }
 
             ]
@@ -237,6 +249,5 @@ const toolbox = {
         }
         */
     ]
-
 
 };
