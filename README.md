@@ -1,0 +1,1 @@
+# Scratch-C-Aut-mata-Sint-ctico
