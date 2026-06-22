@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch C++ & Autómata Sintáctico</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <main id="workspacePanel">
+        <div class="workspace-header">
+            <h2>Bloques</h2>
+        </div>
+        <div id="blocklyDiv"></div>
+    </main>
+
+    <aside class="code-panel">
+        <div class="code-header">
+            <h2>Código C++</h2>
+        </div>
+        <pre id="generatedCode"></pre>
+    </aside>
+
+    <aside class="automata-panel">
+        <div class="automata-header">
+            <h2>Autómata Sintáctico</h2>
+        </div>
+        <div class="automata-content">
+            <button id="btnEjecutarAut" onclick="iniciarAnalisisAnimado()">▶ Verificar Código Generado</button>
+
+            <div class="seccion-titulo">Consola de Verificación</div>
+            <div id="consola-traza">Esperando...</div>
+
+            <div class="seccion-titulo">Cinta de Tokens</div>
+            <div id="contenedor-tokens">Los tokens aparecerán aquí...</div>
+
+            <div class="seccion-titulo">Máquina de Estados</div>
+            <div id="maquina-estados">
+                <div class="estado-caja estado-central" id="estado-ESPERANDO_SENTENCIA">ESTADO CENTRAL<br>(Espera Sentencia)</div>
+                
+                <div class="rutas-grid">
+                    <div class="ruta-container">
+                        <div class="ruta-titulo">Condicionales (IF / ELSE)</div>
+                        <div class="ruta-flex">
+                            <div id="estado-IF_CONDICION" class="estado-caja">EVALUANDO IF</div>
+                            <div id="estado-ELSE_ACEPTADO" class="estado-caja" style="border-color: #ff9800;">VALIDANDO ELSE</div>
+                        </div>
+                    </div>
+
+                    <div class="ruta-container">
+                        <div class="ruta-titulo">Ciclos Iterativos</div>
+                        <div class="ruta-flex">
+                            <div id="estado-WHILE_CONDICION" class="estado-caja" style="border-color: #4caf50;">EVALUANDO WHILE</div>
+                            <div id="estado-FOR_CONDICION" class="estado-caja" style="border-color: #2196f3; margin-left: 10px;">EVALUANDO FOR</div>
+                        </div>
+                    </div>
+
+                    <div class="ruta-container">
+                        <div class="ruta-titulo">Estructura Switch</div>
+                        <div class="ruta-flex">
+                            <div id="estado-SWITCH_CONDICION" class="estado-caja">VAR SWITCH</div><div class="flecha">➔</div>
+                            <div id="estado-CASE_VALOR" class="estado-caja" style="border-color: #c586c0;">VALOR CASE</div><div class="flecha">➔</div>
+                            <div id="estado-ESPERA_DOS_PUNTOS" class="estado-caja" style="border-color: #c586c0;">ESPERA ':'</div>
+                        </div>
+                    </div>
+
+                    <div class="ruta-container">
+                        <div class="ruta-titulo">Asignación y Cout</div>
+                        <div class="ruta-flex">
+                            <div id="estado-VAR_ESPERA_ID" class="estado-caja">ID VAR</div><div class="flecha">➔</div>
+                            <div id="estado-VAR_ESPERA_IGUAL_O_FIN" class="estado-caja">'=' o ';'</div><div class="flecha">➔</div>
+                            <div id="estado-VAR_ESPERA_VALOR" class="estado-caja">VALOR VAR</div><div class="flecha">➔</div>
+                            <div id="estado-VAR_ESPERA_FIN" class="estado-caja" style="border-color: #fff;">ESPERA ';'</div>
+                        </div>
+                        <div class="ruta-flex" style="margin-top: 10px;">
+                            <div id="estado-COUT_ESPERA_INSERCION" class="estado-caja">COUT '&lt;&lt;'</div><div class="flecha">➔</div>
+                            <div id="estado-COUT_ESPERA_VALOR" class="estado-caja">VALOR IMPRIMIR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+</div>
+
+<script src="js/toolbox.js"></script>
+<script src="js/workspace.js"></script>
+<script src="js/blocks/variable.js"></script>
+<script src="js/blocks/io.js"></script>
+<script src="js/blocks/operators.js"></script>
+<script src="js/blocks/conditions.js"></script>
+<script src="js/blocks/loops.js"></script>
+<script src="js/blocks/funtions.js"></script>
+<script src="js/blocks/functionParameters.js"></script>
+<script src="js/blocks/arrays.js"></script>
+<script src="js/blocks/switch.js"></script>
+
+<script src="js/generators/variableGenerator.js"></script>
+<script src="js/generators/ioGenerator.js"></script>
+<script src="js/generators/operatorsGenerator.js"></script>
+<script src="js/generators/conditionsGenerator.js"></script>
+<script src="js/generators/loopsGenerator.js"></script>
+<script src="js/generators/functionsGenerator.js"></script>
+<script src="js/generators/functionParametersGenerator.js"></script>
+<script src="js/generators/arraysGenerator.js"></script>
+<script src="js/generators/switchGenerator.js"></script>
+
+<script src="js/codeBuilder.js"></script>
+<script src="js/app.js"></script>
+
+<script src="js/automata.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* ========================================== */
+/* 1. PANEL IZQUIERDO (BLOQUES) 50%           */
+/* ========================================== */
+
+#workspacePanel {
+    width: 50%; 
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff; 
+}
+
+.workspace-header {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+.workspace-header h2 {
+    color: #333;
+    font-size: 1.2rem;
+    margin-left: 10px;
+}
+
+#blocklyDiv {
+    width: 100%;
+    flex-grow: 1; 
+}
+
+/* ========================================== */
+/* 2. PANEL CENTRAL (CÓDIGO C++) 20%          */
+/* ========================================== */
+
+.code-panel {
+    width: 20%;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid #333; 
+    border-right: 2px solid #333; 
+}
+
+.code-header {
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    background-color: #252526;
+}
+
+.code-header h2 {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+#generatedCode {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* ========================================== */
+/* 3. PANEL DERECHO (AUTÓMATA) 30%            */
+/* ========================================== */
+
+.automata-panel {
+    width: 30%;
+    background: #252526;
+    color: #d4d4d4;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.automata-header {
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    background-color: #2d2d30;
+}
+
+.automata-header h2 {
+    color: #569cd6;
+    font-size: 1.2rem;
+}
+
+.automata-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#btnEjecutarAut { 
+    background-color: #0e639c; 
+    color: white; 
+    border: none; 
+    padding: 12px 15px; 
+    cursor: pointer; 
+    font-size: 14px; 
+    margin-bottom: 15px; 
+    border-radius: 5px; 
+    font-weight: bold;
+    width: 100%; 
+    transition: 0.2s;
+}
+
+#btnEjecutarAut:hover { 
+    background-color: #1177bb; 
+}
+
+#btnEjecutarAut:disabled { 
+    background-color: #555; 
+    cursor: not-allowed; 
+}
+
+.seccion-titulo { 
+    margin-top: 15px; 
+    color: #ce9178; 
+    font-size: 1em; 
+    border-bottom: 1px solid #444; 
+    padding-bottom: 5px; 
+    font-weight: bold;
+}
+
+/* --- Cinta de Tokens --- */
+#contenedor-tokens { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 6px; 
+    margin-top: 10px; 
+}
+
+.token-badge {
+    background-color: #333; 
+    border: 2px solid #555; 
+    transition: all 0.3s ease;
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    font-family: monospace; 
+    font-size: 12px;
+}
+
+.token-badge.leyendo { 
+    border-color: #e51400; 
+    transform: scale(1.1); 
+    box-shadow: 0 0 8px #e51400; 
+}
+
+.token-badge.error-token { 
+    border-color: #f44336; 
+    color: #f44336; 
+}
+
+.token-tipo { 
+    color: #4ec9b0; 
+    font-size: 10px; 
+    display: block; 
+    margin-bottom: 2px;
+}
+
+.token-valor { 
+    color: #ce9178; 
+    font-weight: bold; 
+}
+
+/* --- Consola --- */
+#consola-traza {
+    background-color: #000; 
+    padding: 10px; 
+    border: 1px solid #444; 
+    margin-top: 10px; 
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 12px; 
+    border-radius: 5px; 
+    height: 150px; 
+    overflow-y: auto;
+}
+
+.log-paso { color: #d4d4d4; margin-bottom: 5px; }
+.log-exito { color: #4caf50; margin-top: 10px; font-weight: bold; font-size: 14px; }
+.log-error { color: #f44336; margin-top: 10px; font-weight: bold; font-size: 14px; }
+
+/* --- Máquina de Estados Visual --- */
+#maquina-estados {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    background-color: #1e1e1e; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-top: 10px;
+    overflow-x: auto; 
+}
+
+.estado-caja {
+    background-color: #333; 
+    border: 2px solid #555; 
+    padding: 8px; 
+    border-radius: 6px; 
+    text-align: center; 
+    font-size: 11px; 
+    font-weight: bold;
+    color: #888; 
+    min-width: 100px; 
+    transition: all 0.3s ease; 
+    flex-shrink: 0;
+}
+
+.estado-caja.activo {
+    background-color: #094771; 
+    border-color: #3794ff; 
+    color: #fff;
+    box-shadow: 0 0 10px #3794ff; 
+    transform: scale(1.05); 
+    z-index: 10;
+}
+
+.estado-caja.error {
+    background-color: #7a1000; 
+    border-color: #f44336; 
+    color: #fff;
+    box-shadow: 0 0 10px #f44336; 
+    transform: scale(1.05);
+}
+
+.estado-central { 
+    margin: 0 auto; 
+    min-width: 140px; 
+    background-color: #4d4d4d; 
+    border-color: #777;
+}
+
+.rutas-grid { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+.ruta-container { 
+    background: #252526; 
+    border: 1px dashed #444; 
+    border-radius: 8px; 
+    padding: 10px; 
+}
+
+.ruta-titulo { 
+    font-size: 10px; 
+    color: #a9a9a9; 
+    text-transform: uppercase; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+}
+
+.ruta-flex { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    overflow-x: auto; 
+    padding-bottom: 5px; 
+}
+
+.flecha { 
+    color: #555; 
+    font-size: 16px; 
+    font-weight: bold; 
+    flex-shrink: 0; 
+}
+
+/* --- Personalización de Barras de Scroll --- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #1e1e1e; }
+::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #777; }
