@@ -1,1 +1,1 @@
-# Scratch-C-Aut-mata-Sint-ctico
+# Scratch-Automata-Sintactico
