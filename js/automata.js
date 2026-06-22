@@ -3,7 +3,6 @@ const dormir = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * 1. COMPONENTE LÉXICO (Autómata Finito para Tokenización)
- * Analiza carácter por carácter y clasifica en Tokens puros.
  */
 function lexer(codigo) {
     const tokens = [];
@@ -60,7 +59,6 @@ function lexer(codigo) {
     return tokens;
 }
 
-// Funciones de renderizado en el HTML (Manipulación visual de la interfaz)
 function actualizarConsola(mensaje) {
     const consola = document.getElementById('consola-traza');
     consola.innerHTML += `<div class="log-paso">${mensaje}</div>`;
@@ -81,13 +79,11 @@ function resaltarToken(index) {
 
 /**
  * 2. COMPONENTE SINTÁCTICO - SEMÁNTICO (Autómata de Pila)
- * Ejecuta el ciclo de transiciones puras basadas en los Tokens recibidos.
  */
 async function iniciarAnalisisAnimado() {
     const btn = document.getElementById('btnEjecutarAut');
     const divTokens = document.getElementById('contenedor-tokens');
     
-    // Extraemos el código limpio generado por los bloques
     let codigoBruto = document.getElementById('generatedCode').innerText.trim();
     let codigo = codigoBruto;
     
@@ -106,13 +102,11 @@ async function iniciarAnalisisAnimado() {
     document.getElementById('consola-traza').innerHTML = '';
     divTokens.innerHTML = '';
     
-    // --- COMPONENTES MATEMÁTICOS DEL AUTÓMATA ---
-    let estadoActual = 'ESPERANDO_SENTENCIA'; // Q0 (Estado Inicial)
-    let pilaLlaves = [];                      // Pila para Scope {}
-    let pilaParentesis = [];                  // Pila para expresiones ()
-    let tablaSimbolos = new Set();            // Memoria interna del autómata (Variables declaradas)
+    let estadoActual = 'ESPERANDO_SENTENCIA'; 
+    let pilaLlaves = [];                      
+    let pilaParentesis = [];                  
+    let tablaSimbolos = new Set();            
     
-    // Variables auxiliares de transiciones internas
     let memoriaTipoDato = ''; 
     let contextoBloque = 'NORMAL'; 
     let permiteElse = false;       
@@ -124,7 +118,6 @@ async function iniciarAnalisisAnimado() {
     try {
         const tokens = lexer(codigo);
         
-        // Dibujar los tokens en la cinta visual
         tokens.forEach((token, index) => {
             let claseExtra = (token.tipo === 'ERROR_LEXICO' || token.tipo === 'ERROR_COMILLAS') ? 'error-token' : '';
             divTokens.innerHTML += `
@@ -138,7 +131,6 @@ async function iniciarAnalisisAnimado() {
         actualizarConsola("Iniciando ejecución del autómata de estados...");
         await dormir(600);
 
-        // RECORRIDO DE LA CINTA DE TOKENS (Entrada del Autómata)
         for (let i = 0; i < tokens.length; i++) {
             const token = tokens[i];
             
@@ -146,11 +138,9 @@ async function iniciarAnalisisAnimado() {
             actualizarConsola(`➤ Evaluación: Estado [${estadoActual}] ➔ Token [${token.tipo}] ('${token.valor}')`);
             await dormir(300); 
 
-            // Control de errores léxicos inmediatos
             if (token.tipo === 'ERROR_COMILLAS') throw new Error(`Cadena de texto mal cerrada: <strong>${token.valor}</strong>`);
             if (token.tipo === 'ERROR_LEXICO') throw new Error(`Carácter no reconocido por el alfabeto: '${token.valor}'`);
 
-            // Operaciones globales de la PILA (Abriendo y cerrando bloques de código)
             if (token.tipo === 'LLAVE_ABRE' && estadoActual === 'ESPERANDO_SENTENCIA') {
                 pilaLlaves.push(contextoBloque); 
                 actualizarConsola(`&nbsp;&nbsp;[Pila] Push de contexto: '${contextoBloque}'`);
@@ -169,14 +159,12 @@ async function iniciarAnalisisAnimado() {
                 continue;
             }
 
-            // TABLA DE TRANSICIONES DE ESTADOS (El corazón del Autómata)
             switch (estadoActual) {
                 case 'ESPERANDO_SENTENCIA':
                     if (token.tipo === 'TIPO_DATO') { estadoActual = 'VAR_ESPERA_ID'; memoriaTipoDato = token.valor; permiteElse = false; requiereInstruccionCase = false; } 
                     else if (token.tipo === 'IDENTIFICADOR') { 
-                        // [VALIDACIÓN SEMÁNTICA]: Verificar existencia en la memoria del autómata
                         if (!tablaSimbolos.has(token.valor)) {
-                            throw new Error(`<b>Error Semántico:</b> Intento de uso de la variable '<strong>${token.valor}</strong>', pero esta no existe en la Tabla de Símbolos (No fue creada previamente).`);
+                            throw new Error(`<b>Error Semántico:</b> Intento de uso de la variable '<strong>${token.valor}</strong>', pero esta no existe en la Tabla de Símbolos.`);
                         }
                         estadoActual = 'VAR_ESPERA_IGUAL_O_FIN'; memoriaTipoDato = ''; permiteElse = false; requiereInstruccionCase = false; 
                     }
@@ -205,7 +193,6 @@ async function iniciarAnalisisAnimado() {
 
                 case 'VAR_ESPERA_ID':
                     if (token.tipo === 'IDENTIFICADOR') {
-                        // [REGISTRO SEMÁNTICO]: Almacenar la nueva variable en la memoria del autómata
                         tablaSimbolos.add(token.valor);
                         actualizarConsola(`&nbsp;&nbsp;<span style="color: #4caf50;">[Semántico] Exito: Nueva variable '${token.valor}' registrada en la memoria.</span>`);
                         estadoActual = 'VAR_ESPERA_IGUAL_O_FIN';
@@ -213,26 +200,45 @@ async function iniciarAnalisisAnimado() {
                     else throw new Error(`Error sintáctico: Se esperaba un IDENTIFICADOR para nombrar la variable.`); break;
                 
                 case 'VAR_ESPERA_IGUAL_O_FIN':
-                    if (token.tipo === 'ASIGNACION') estadoActual = 'VAR_ESPERA_VALOR';
+                    if (token.tipo === 'ASIGNACION') { estadoActual = 'VAR_ESPERA_VALOR'; pilaParentesis = []; } // Vaciamos pila para la expresión
                     else if (token.tipo === 'FIN_SENTENCIA') estadoActual = 'ESPERANDO_SENTENCIA';
                     else throw new Error(`Error sintáctico: Se esperaba un operador '=' o un ';'.`); break;
                 
+                // ACTUALIZADO: Permite paréntesis de apertura para iniciar expresiones matemáticas
                 case 'VAR_ESPERA_VALOR':
-                    if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA]: Si haces x = y;, 'y' debe existir en memoria
+                    if (token.tipo === 'PAREN_ABRE') {
+                        pilaParentesis.push('('); // Guardamos en la pila que abrimos un paréntesis
+                        // Se mantiene en VAR_ESPERA_VALOR esperando lo de adentro
+                    }
+                    else if (token.tipo === 'IDENTIFICADOR') {
                         if (!tablaSimbolos.has(token.valor)) {
-                            throw new Error(`<b>Error Semántico:</b> No puedes asignar la variable '<strong>${token.valor}</strong>' porque no ha sido declarada.`);
+                            throw new Error(`<b>Error Semántico:</b> No puedes operar con '<strong>${token.valor}</strong>' porque no ha sido declarada.`);
                         }
                         estadoActual = 'VAR_ESPERA_FIN';
                     }
-                    else if (memoriaTipoDato === 'string' && token.tipo !== 'TEXTO') throw new Error(`Error de tipos: Tipo 'string' requiere un valor de TEXTO entre comillas.`);
-                    else if (token.tipo === 'NUMERO' || token.tipo === 'TEXTO') { estadoActual = 'VAR_ESPERA_FIN'; }
-                    else throw new Error(`Error sintáctico: Valor de asignación no válido.`); break;
+                    else if (token.tipo === 'NUMERO' || token.tipo === 'TEXTO') { 
+                        if (memoriaTipoDato === 'string' && token.tipo !== 'TEXTO') throw new Error(`Error de tipos: Tipo 'string' requiere un valor de TEXTO entre comillas.`);
+                        estadoActual = 'VAR_ESPERA_FIN'; 
+                    }
+                    else throw new Error(`Error sintáctico: Valor de asignación no válido. Recibido '${token.valor}'`); 
+                    break;
                     
+                // ACTUALIZADO: Permite cerrar el paréntesis si estamos evaluando matemáticas
                 case 'VAR_ESPERA_FIN':
-                    if (token.tipo === 'FIN_SENTENCIA') estadoActual = 'ESPERANDO_SENTENCIA'; 
-                    else if (token.tipo === 'OPERADOR_MATEMATICO') estadoActual = 'VAR_ESPERA_VALOR'; 
-                    else throw new Error(`Error estructural: Se esperaba un ';' para finalizar la línea.`); break;
+                    if (token.tipo === 'FIN_SENTENCIA') {
+                        if (pilaParentesis.length > 0) throw new Error("Error sintáctico: Falta cerrar un paréntesis ')' en tu operación matemática.");
+                        estadoActual = 'ESPERANDO_SENTENCIA'; 
+                    }
+                    else if (token.tipo === 'OPERADOR_MATEMATICO') {
+                        estadoActual = 'VAR_ESPERA_VALOR'; 
+                    }
+                    else if (token.tipo === 'PAREN_CIERRA') {
+                        if (pilaParentesis.length === 0) throw new Error("Error sintáctico: Paréntesis ')' de cierre sobrante o inesperado.");
+                        pilaParentesis.pop(); // Sacamos de la pila
+                        // Se mantiene en VAR_ESPERA_FIN (puede venir un ';' o un '+')
+                    }
+                    else throw new Error(`Error estructural: Se esperaba un ';' para finalizar la línea o un operador matemático.`); 
+                    break;
 
                 case 'IF_CONDICION':
                     if (token.tipo === 'PAREN_ABRE') pilaParentesis.push('(');
@@ -242,7 +248,6 @@ async function iniciarAnalisisAnimado() {
                         if (pilaParentesis.length === 0) { estadoActual = 'ESPERANDO_SENTENCIA'; contextoBloque = 'IF'; }
                     }
                     else if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA]
                         if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> Variable '<strong>${token.valor}</strong>' usada en condición IF no ha sido declarada.`);
                     }
                     else if (!['NUMERO','OPERADOR_RELACIONAL','OPERADOR_MATEMATICO','OPERADOR_LOGICO'].includes(token.tipo)) { throw new Error(`Token ilegal dentro de la condición del IF.`); }
@@ -256,7 +261,6 @@ async function iniciarAnalisisAnimado() {
                         if (pilaParentesis.length === 0) { estadoActual = 'ESPERANDO_SENTENCIA'; contextoBloque = 'WHILE'; }
                     }
                     else if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA]
                         if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> Variable '<strong>${token.valor}</strong>' usada en el bucle WHILE no existe.`);
                     }
                     else if (!['NUMERO','OPERADOR_RELACIONAL','OPERADOR_MATEMATICO', 'OPERADOR_LOGICO'].includes(token.tipo)) { throw new Error(`Token ilegal dentro de la condición del WHILE.`); }
@@ -270,9 +274,8 @@ async function iniciarAnalisisAnimado() {
                         if (pilaParentesis.length === 0) { estadoActual = 'ESPERANDO_SENTENCIA'; contextoBloque = 'FOR'; }
                     }
                     else if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA INTELIGENTE EN EL FOR]
                         if (ultimoTokenTipo === 'TIPO_DATO') {
-                            tablaSimbolos.add(token.valor); // Declaración interna: for(int i...
+                            tablaSimbolos.add(token.valor); 
                             actualizarConsola(`&nbsp;&nbsp;<span style="color: #4caf50;">[Semántico] Variable local '${token.valor}' inicializada en el FOR.</span>`);
                         } else {
                             if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> La variable iteradora '<strong>${token.valor}</strong>' no existe.`);
@@ -291,7 +294,6 @@ async function iniciarAnalisisAnimado() {
                         if (pilaParentesis.length === 0) { estadoActual = 'ESPERANDO_SENTENCIA'; contextoBloque = 'SWITCH'; }
                     }
                     else if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA]
                         if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> La variable evaluada en el SWITCH ('<strong>${token.valor}</strong>') no existe.`);
                     }
                     else if (!['NUMERO','OPERADOR_MATEMATICO'].includes(token.tipo)) { throw new Error(`El 'switch' requiere una variable válida o expresión numérica.`); }
@@ -301,7 +303,7 @@ async function iniciarAnalisisAnimado() {
                     if (token.tipo === 'IDENTIFICADOR') {
                         if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> Constante '${token.valor}' en el case no declarada.`);
                     }
-                    else if (!['NUMERO', 'TEXTO'].includes(token.tipo)) throw new Error(`Error sintáctico: El 'case' requiere un valor literal fijo (Número o Texto).`); 
+                    else if (!['NUMERO', 'TEXTO'].includes(token.tipo)) throw new Error(`Error sintáctico: El 'case' requiere un valor literal fijo.`); 
                     break;
 
                 case 'ESPERA_DOS_PUNTOS':
@@ -313,7 +315,6 @@ async function iniciarAnalisisAnimado() {
                 
                 case 'COUT_ESPERA_VALOR':
                     if (token.tipo === 'IDENTIFICADOR') {
-                        // [VALIDACIÓN SEMÁNTICA]: No imprimir fantasmas
                         if (!tablaSimbolos.has(token.valor)) throw new Error(`<b>Error Semántico:</b> Intento de imprimir la variable '<strong>${token.valor}</strong>' por consola, pero esta no existe.`);
                         estadoActual = 'COUT_ESPERA_MAS_O_FIN';
                     }
@@ -327,7 +328,6 @@ async function iniciarAnalisisAnimado() {
                     else throw new Error(`Sintaxis inválida: Falta encadenar con '<<' o cerrar con ';'.`); break;
             }
 
-            // Cambiar visualmente el estado activo en la UI si corresponde
             if(!['IF_CONDICION', 'SWITCH_CONDICION', 'WHILE_CONDICION', 'FOR_CONDICION'].includes(estadoActual) && token.tipo !== 'ELSE') { 
                 actualizarConsola(`&nbsp;&nbsp;Transición de Estado Exitosa ➔ [${estadoActual}]`); 
             }
@@ -337,7 +337,6 @@ async function iniciarAnalisisAnimado() {
             await dormir(600); 
         }
 
-        // --- ESTADOS DE ACEPTACIÓN FINAL ---
         if (estadoActual !== 'ESPERANDO_SENTENCIA') throw new Error("Error de Cierre: El código terminó abruptamente en una instrucción incompleta.");
         if (pilaParentesis.length > 0) throw new Error("Error Semántico/Sintáctico: Uno o más paréntesis quedaron abiertos.");
         if (pilaLlaves.length > 0) throw new Error("Error estructural: Falta cerrar un bloque de código con '}'.");
