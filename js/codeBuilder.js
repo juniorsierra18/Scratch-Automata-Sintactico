@@ -42,18 +42,15 @@ function buildCppCode() {
 
     return cppCode;
 
-
 }
 
 function processStatement(block) {
-
 
     let result = "";
 
     while (block) {
 
-        /* VARIABLES */
-
+        /* VARIABLES NORMALES */
         if (
             block.type === "create_variable" ||
             block.type === "assign_variable"
@@ -63,8 +60,16 @@ function processStatement(block) {
 
         }
 
-        /* ENTRADA / SALIDA */
+        /* NUEVO: VARIABLES CON OPERADORES */
+        else if (
+            block.type === "create_variable_with_op" ||
+            block.type === "assign_to_variable"
+        ) {
+            // Llama a la nueva función que agregamos en operatorsGenerator.js
+            result += generateVariableStatement(block);
+        }
 
+        /* ENTRADA / SALIDA */
         else if (
             block.type === "cout_block" ||
             block.type === "cout_variable" ||
@@ -76,7 +81,6 @@ function processStatement(block) {
         }
 
         /* CONDICIONALES */
-
         else if (
             block.type === "if_block" ||
             block.type === "if_else_block"
@@ -87,7 +91,6 @@ function processStatement(block) {
         }
 
         /* CICLOS */
-
         else if (
             block.type === "while_block" ||
             block.type === "for_block"
@@ -98,7 +101,6 @@ function processStatement(block) {
         }
 
         /* FUNCIONES */
-
         else if (
             block.type === "call_function" ||
             block.type === "return_block"
@@ -107,61 +109,43 @@ function processStatement(block) {
             result += generateFunctionBlock(block);
 
         }
+
         /* ARREGLOS */
         else if (
-
-
             block.type === "array_create" ||
             block.type === "array_set"
-
-
         ) {
 
-
-            result +=
-                generateArrayBlock(block);
-
+            result += generateArrayBlock(block);
 
         }
+
         /* SWITCH */
-
         else if (
-
-
             block.type === "switch_block" ||
             block.type === "case_block" ||
             block.type === "default_block"
-
-
         ) {
 
-
-            result +=
-                generateSwitchBlock(block);
-
+            result += generateSwitchBlock(block);
 
         }
-        else if (
 
+        /* PARÁMETROS DE FUNCIONES */
+        else if (
             block.type === "function_parameter" ||
             block.type === "function_call_args"
-
         ) {
 
-            result +=
-                generateFunctionParameterBlock(block);
+            result += generateFunctionParameterBlock(block);
 
         }
 
-
-
+        // Avanza al siguiente bloque apilado hacia abajo
         block = block.getNextBlock();
-
 
     }
 
-
     return result;
 
-
-}
+}   
