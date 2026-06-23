@@ -30,13 +30,11 @@ const toolbox = {
                     type: "variable_reference"
                 },
 
-                // NUEVO: Crear variable y asignarle una operación
                 {
                     kind: "block",
                     type: "create_variable_with_op"
                 },
 
-                // NUEVO: Asignar operación a variable existente
                 {
                     kind: "block",
                     type: "assign_to_variable"
@@ -65,11 +63,6 @@ const toolbox = {
                     kind: "block",
                     type: "cout_variable"
                 },
-
-                {
-                    kind: "block",
-                    type: "cin_block"
-                }
 
             ]
         },
@@ -171,83 +164,6 @@ const toolbox = {
 
             ]
         },
-
-        /*
-        =====================================
-           FUNCIONES
-        ===================================== 
-
-        {
-            kind: "category",
-            name: "Funciones",
-            colour: "#795548",
-
-            contents: [
-
-                {
-                    kind: "block",
-                    type: "function_void"
-                },
-
-                {
-                    kind: "block",
-                    type: "function_return"
-                },
-
-                {
-                    kind: "block",
-                    type: "call_function"
-                },
-
-                {
-                    kind: "block",
-                    type: "return_block"
-                }, 
-                
-                {
-                    kind: "block",
-                    type: "function_parameter"
-                },
-
-                {
-                    kind: "block",
-                    type: "function_call_args"
-                }
-
-            ]
-        },
-
-        =====================================
-           ARREGLOS
-           (ENTREGA 6)
-        =====================================
-
-        {
-            kind: "category",
-            name: "Arreglos",
-            colour: "#607D8B",
-
-            contents: [
-
-                {
-                    kind: "block",
-                    type: "array_create"
-                },
-
-                {
-                    kind: "block",
-                    type: "array_set"
-                },
-
-                {
-                    kind: "block",
-                    type: "array_get"
-                }
-
-            ]
-
-        }
-        */
     ]
 
 };

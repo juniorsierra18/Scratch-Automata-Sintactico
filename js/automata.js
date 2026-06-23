@@ -200,15 +200,13 @@ async function iniciarAnalisisAnimado() {
                     else throw new Error(`Error sintáctico: Se esperaba un IDENTIFICADOR para nombrar la variable.`); break;
                 
                 case 'VAR_ESPERA_IGUAL_O_FIN':
-                    if (token.tipo === 'ASIGNACION') { estadoActual = 'VAR_ESPERA_VALOR'; pilaParentesis = []; } // Vaciamos pila para la expresión
+                    if (token.tipo === 'ASIGNACION') { estadoActual = 'VAR_ESPERA_VALOR'; pilaParentesis = []; } 
                     else if (token.tipo === 'FIN_SENTENCIA') estadoActual = 'ESPERANDO_SENTENCIA';
                     else throw new Error(`Error sintáctico: Se esperaba un operador '=' o un ';'.`); break;
                 
-                // ACTUALIZADO: Permite paréntesis de apertura para iniciar expresiones matemáticas
                 case 'VAR_ESPERA_VALOR':
                     if (token.tipo === 'PAREN_ABRE') {
-                        pilaParentesis.push('('); // Guardamos en la pila que abrimos un paréntesis
-                        // Se mantiene en VAR_ESPERA_VALOR esperando lo de adentro
+                        pilaParentesis.push('('); 
                     }
                     else if (token.tipo === 'IDENTIFICADOR') {
                         if (!tablaSimbolos.has(token.valor)) {
@@ -223,7 +221,6 @@ async function iniciarAnalisisAnimado() {
                     else throw new Error(`Error sintáctico: Valor de asignación no válido. Recibido '${token.valor}'`); 
                     break;
                     
-                // ACTUALIZADO: Permite cerrar el paréntesis si estamos evaluando matemáticas
                 case 'VAR_ESPERA_FIN':
                     if (token.tipo === 'FIN_SENTENCIA') {
                         if (pilaParentesis.length > 0) throw new Error("Error sintáctico: Falta cerrar un paréntesis ')' en tu operación matemática.");
@@ -234,8 +231,7 @@ async function iniciarAnalisisAnimado() {
                     }
                     else if (token.tipo === 'PAREN_CIERRA') {
                         if (pilaParentesis.length === 0) throw new Error("Error sintáctico: Paréntesis ')' de cierre sobrante o inesperado.");
-                        pilaParentesis.pop(); // Sacamos de la pila
-                        // Se mantiene en VAR_ESPERA_FIN (puede venir un ';' o un '+')
+                        pilaParentesis.pop(); 
                     }
                     else throw new Error(`Error estructural: Se esperaba un ';' para finalizar la línea o un operador matemático.`); 
                     break;
@@ -344,9 +340,36 @@ async function iniciarAnalisisAnimado() {
         document.querySelectorAll('.token-badge').forEach(el => el.classList.remove('leyendo'));
         actualizarConsola(`<div class="log-exito">✅ CÓDIGO COMPLETAMENTE VÁLIDO<br>• Análisis Sintáctico: Correcto<br>• Análisis Semántico (Variables): Verificado</div>`);
 
+        // ==========================================
+        // NUEVO: ÉXITO - ENCENDER BOTÓN DE EJECUCIÓN
+        // ==========================================
+        const btnEjecutar = document.getElementById('btnEjecutarCodigo');
+        const terminal = document.getElementById('terminalSalida');
+        if (btnEjecutar && terminal) {
+            btnEjecutar.disabled = false;
+            btnEjecutar.style.opacity = "1";
+            btnEjecutar.style.cursor = "pointer";
+            terminal.style.color = "#aaaaaa";
+            terminal.innerText = "🔓 Autómata aprobado. Listo para ejecutar el código.";
+        }
+
     } catch (error) {
         resaltarEstado(estadoActual, true); 
         actualizarConsola(`<div class="log-error">❌ COMPILACIÓN RECHAZADA:<br>${error.message}<br><br>Autómata detenido en estado de falla.</div>`);
+        
+        // ==========================================
+        // NUEVO: ERROR - APAGAR BOTÓN DE EJECUCIÓN
+        // ==========================================
+        const btnEjecutar = document.getElementById('btnEjecutarCodigo');
+        const terminal = document.getElementById('terminalSalida');
+        if (btnEjecutar && terminal) {
+            btnEjecutar.disabled = true;
+            btnEjecutar.style.opacity = "0.5";
+            btnEjecutar.style.cursor = "not-allowed";
+            terminal.style.color = "#ff4c4c";
+            terminal.innerText = "🔒 Bloqueado: Corrige los errores en el Autómata primero.";
+        }
+
     } finally {
         btn.disabled = false; 
     }

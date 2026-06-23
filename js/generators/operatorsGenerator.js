@@ -35,7 +35,7 @@ function generateExpression(block) {
     }
 }
 
-// NUEVO: Función para generar las sentencias de variables (Retornan una línea de código completa con ';')
+// Función para generar las sentencias de variables (Retornan una línea de código completa con ';')
 function generateVariableStatement(block) {
     if (!block) {
         return "";

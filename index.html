@@ -22,11 +22,22 @@
         <div id="blocklyDiv"></div>
     </main>
 
+    <!-- PANEL CENTRAL (Código C++ y Terminal) -->
     <aside class="code-panel">
-        <div class="code-header">
+        <div class="code-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Código C++</h2>
+            <!-- Botón de ejecución bloqueado por defecto -->
+            <button id="btnEjecutarCodigo" onclick="ejecutarCodigoCpp()" disabled style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: not-allowed; font-weight: bold; opacity: 0.5; transition: 0.3s;">
+                ▶ Ejecutar Código
+            </button>
         </div>
         <pre id="generatedCode"></pre>
+
+        <!-- Terminal de salida -->
+        <div class="code-header" style="margin-top: 10px; background: #222;">
+            <h2 style="color: #4CAF50;">Terminal de Salida</h2>
+        </div>
+        <pre id="terminalSalida" style="background: #000; color: #aaaaaa; padding: 15px; height: 150px; overflow-y: auto; border-radius: 0 0 8px 8px; font-family: monospace; border: 1px solid #333;">Verificar Primero El Código</pre>
     </aside>
 
     <aside class="automata-panel">
