@@ -338,7 +338,7 @@ async function iniciarAnalisisAnimado() {
         if (pilaLlaves.length > 0) throw new Error("Error estructural: Falta cerrar un bloque de código con '}'.");
 
         document.querySelectorAll('.token-badge').forEach(el => el.classList.remove('leyendo'));
-        actualizarConsola(`<div class="log-exito">✅ CÓDIGO COMPLETAMENTE VÁLIDO<br>• Análisis Sintáctico: Correcto<br>• Análisis Semántico (Variables): Verificado</div>`);
+        actualizarConsola(`<div class="log-exito">CÓDIGO COMPLETAMENTE VÁLIDO<br>• Análisis Sintáctico: Correcto<br>• Análisis Semántico (Variables): Verificado</div>`);
 
         // ==========================================
         // NUEVO: ÉXITO - ENCENDER BOTÓN DE EJECUCIÓN
@@ -350,12 +350,12 @@ async function iniciarAnalisisAnimado() {
             btnEjecutar.style.opacity = "1";
             btnEjecutar.style.cursor = "pointer";
             terminal.style.color = "#aaaaaa";
-            terminal.innerText = "🔓 Autómata aprobado. Listo para ejecutar el código.";
+            terminal.innerText = "Listo para ejecutar el código.";
         }
 
     } catch (error) {
         resaltarEstado(estadoActual, true); 
-        actualizarConsola(`<div class="log-error">❌ COMPILACIÓN RECHAZADA:<br>${error.message}<br><br>Autómata detenido en estado de falla.</div>`);
+        actualizarConsola(`<div class="log-error">COMPILACIÓN RECHAZADA:<br>${error.message}<br><br>Autómata detenido en estado de falla.</div>`);
         
         // ==========================================
         // NUEVO: ERROR - APAGAR BOTÓN DE EJECUCIÓN
@@ -367,7 +367,7 @@ async function iniciarAnalisisAnimado() {
             btnEjecutar.style.opacity = "0.5";
             btnEjecutar.style.cursor = "not-allowed";
             terminal.style.color = "#ff4c4c";
-            terminal.innerText = "🔒 Bloqueado: Corrige los errores en el Autómata primero.";
+            terminal.innerText = "Corrige los errores en el Autómata primero.";
         }
 
     } finally {
